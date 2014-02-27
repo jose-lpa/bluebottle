@@ -15,7 +15,7 @@ from django_extensions.db.fields import ModificationDateTimeField
 from djchoices.choices import DjangoChoices, ChoiceItem
 from sorl.thumbnail import ImageField
 
-from taggit_autocomplete_modified.managers import TaggableManagerAutocomplete as TaggableManager
+from taggit.managers import TaggableManager
 
 
 options.DEFAULT_NAMES = options.DEFAULT_NAMES + ('default_serializer',)
