@@ -23,7 +23,8 @@ class Migration(SchemaMigration):
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('member', self.gf('django.db.models.fields.related.ForeignKey')(to=orm[settings.AUTH_USER_MODEL])),
             ('status', self.gf('django.db.models.fields.CharField')(max_length=20)),
-            ('task_id', self.gf('django.db.models.fields.PositiveIntegerField')(null=True)),
+            ('content_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contenttypes.ContentType'])),
+            ('task_id', self.gf('django.db.models.fields.PositiveIntegerField')()),
             ('motivation', self.gf('django.db.models.fields.TextField')(blank=True)),
             ('comment', self.gf('django.db.models.fields.TextField')(blank=True)),
             ('time_spent', self.gf('django.db.models.fields.PositiveSmallIntegerField')(default=0)),
@@ -40,6 +41,8 @@ class Migration(SchemaMigration):
             ('file', self.gf('django.db.models.fields.files.FileField')(max_length=100)),
             ('created', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, blank=True)),
             ('updated', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, blank=True)),
+            ('content_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contenttypes.ContentType'])),
+            ('task_id', self.gf('django.db.models.fields.PositiveIntegerField')()),
         ))
         db.send_create_signal(u'bb_tasks', ['TaskFile'])
 
@@ -79,21 +82,24 @@ class Migration(SchemaMigration):
         u'bb_tasks.taskfile': {
             'Meta': {'object_name': 'TaskFile'},
             'author': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['{0}']".format(settings.AUTH_USER_MODEL)}),
+            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']"}),
             'created': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'blank': 'True'}),
             'file': ('django.db.models.fields.files.FileField', [], {'max_length': '100'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'task_id': ('django.db.models.fields.PositiveIntegerField', [], {}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'updated': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'blank': 'True'})
         },
         u'bb_tasks.taskmember': {
             'Meta': {'object_name': 'TaskMember'},
             'comment': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']"}),
             'created': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'member': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['{0}']".format(settings.AUTH_USER_MODEL)}),
             'motivation': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'status': ('django.db.models.fields.CharField', [], {'max_length': '20'}),
-            'task_id': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True'}),
+            'task_id': ('django.db.models.fields.PositiveIntegerField', [], {}),
             'time_spent': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '0'}),
             'updated': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'blank': 'True'})
         },
@@ -103,6 +109,19 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
+        },
+        u'taggit.tag': {
+            'Meta': {'object_name': 'Tag'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '100'}),
+            'slug': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '100'})
+        },
+        u'taggit.taggeditem': {
+            'Meta': {'object_name': 'TaggedItem'},
+            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "u'taggit_taggeditem_tagged_items'", 'to': u"orm['contenttypes.ContentType']"}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'object_id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True'}),
+            'tag': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "u'taggit_taggeditem_items'", 'to': u"orm['taggit.Tag']"})
         },
         settings.AUTH_USER_MODEL.lower(): {
             'Meta': {'object_name': settings.AUTH_USER_MODEL.split('.')[-1]},
