@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from django.contrib.contenttypes.models import ContentType
 from django.utils.timezone import now
 
 import factory
@@ -20,13 +21,6 @@ class SkillFactory(factory.DjangoModelFactory):
     name_nl = factory.LazyAttribute(lambda o: o.name)
 
 
-class TaskMemberFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = TaskMember
-
-    member = factory.SubFactory(BlueBottleUserFactory)
-    status = 'accepted'
-
-
 class TaskFactory(factory.DjangoModelFactory):
     FACTORY_FOR = TASK_MODEL
 
@@ -36,11 +30,20 @@ class TaskFactory(factory.DjangoModelFactory):
     title = factory.Sequence(lambda n: 'Task_{0}'.format(n))
     deadline = factory.fuzzy.FuzzyDateTime(now(), now() + timedelta(weeks=4))
 
-    @factory.post_generation
-    def members(self, create, extracted, **kwargs):
-        if not create:
-            return
 
-        if extracted:
-            for member in extracted:
-                self.members.add(member)
+class ContentTypeFactory(factory.DjangoModelFactory):
+    FACTORY_FOR = ContentType
+
+    name = 'Task Member'
+    app_label = 'bb_tasks'
+    model = TASK_MODEL.__class__.__name__
+
+
+class TaskMemberFactory(factory.DjangoModelFactory):
+    FACTORY_FOR = TaskMember
+
+    member = factory.SubFactory(BlueBottleUserFactory)
+    status = 'accepted'
+    content_type = factory.SubFactory(ContentTypeFactory)
+    task_id = 1
+    task = factory.SubFactory(TaskFactory)
