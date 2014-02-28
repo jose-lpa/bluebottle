@@ -41,8 +41,6 @@ class TaskFileSerializer(serializers.ModelSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
-    members = TaskMemberSerializer(many=True, source='members', read_only=True)
-    files = TaskFileSerializer(many=True, source='files', read_only=True)
     project = serializers.SlugRelatedField(slug_field='slug')
     skill = serializers.PrimaryKeyRelatedField()
     author = UserPreviewSerializer()

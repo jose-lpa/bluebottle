@@ -17,28 +17,24 @@ class TaskEmailTests(TestCase):
 
         self.some_project = ProjectFactory.create()
 
-        self.taskmember1 = TaskMemberFactory.create(
-            member=self.some_user,
-            status=TaskMember.TaskMemberStatuses.applied
-        )
-        self.taskmember2 = TaskMemberFactory.create(
-            member=self.another_user,
-            status=TaskMember.TaskMemberStatuses.applied
-        )
-
         self.task = TaskFactory.create(
             status=TASK_MODEL.TaskStatuses.in_progress,
             author=self.some_project.owner,
-            # members=(self.taskmember1, self.taskmember2)
         )
-        self.task.members.add(self.taskmember1)
-        self.task.members.add(self.taskmember2)
 
-        # Reload the models to get the ``task_id`` properly set.
-        self.taskmember1 = TaskMember.objects.get(pk=self.taskmember1.pk)
-        self.taskmember2 = TaskMember.objects.get(pk=self.taskmember2.pk)
-
-        self.task.save()
+        self.taskmember1 = TaskMemberFactory.create(
+            member=self.some_user,
+            status=TaskMember.TaskMemberStatuses.applied,
+            task_id=self.task.pk,
+            task=self.task
+        )
+        self.taskmember2 = TaskMemberFactory.create(
+            member=self.another_user,
+            status=TaskMember.TaskMemberStatuses.applied,
+            content_type=self.taskmember1.content_type,
+            task_id=self.task.pk,
+            task=self.task
+        )
 
     def test_mail_taskmember_applied_sent(self):
         """ Test that the e-mails were sent for the task applications """
