@@ -34,7 +34,7 @@ class TaskFactory(factory.DjangoModelFactory):
 class ContentTypeFactory(factory.DjangoModelFactory):
     FACTORY_FOR = ContentType
 
-    name = 'Task Member'
+    name = TASK_MODEL._meta.verbose_name.title()
     app_label = 'bb_tasks'
     model = TASK_MODEL.__class__.__name__
 
